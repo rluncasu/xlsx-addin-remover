@@ -52,28 +52,37 @@ global.FormData = class FormData {
 }
 
 // Mock URL.createObjectURL and URL.revokeObjectURL
-global.URL.createObjectURL = jest.fn(() => 'mocked-url')
-global.URL.revokeObjectURL = jest.fn()
+Object.defineProperty(window, 'URL', {
+  value: {
+    createObjectURL: jest.fn(() => 'mocked-url'),
+    revokeObjectURL: jest.fn(),
+  },
+  writable: true,
+})
 
 // Mock document.createElement for anchor elements
 const originalCreateElement = document.createElement.bind(document)
 document.createElement = jest.fn((tagName) => {
   if (tagName === 'a') {
+    const element = originalCreateElement(tagName)
     return {
+      ...element,
       href: '',
       download: '',
       click: jest.fn(),
-      ...originalCreateElement(tagName),
+      setAttribute: jest.fn(),
+      appendChild: jest.fn(),
+      removeChild: jest.fn(),
     }
   }
   return originalCreateElement(tagName)
 })
 
-// Mock window.URL
-Object.defineProperty(window, 'URL', {
+// Mock document.body
+Object.defineProperty(document, 'body', {
   value: {
-    createObjectURL: jest.fn(() => 'mocked-url'),
-    revokeObjectURL: jest.fn(),
+    appendChild: jest.fn(),
+    removeChild: jest.fn(),
   },
   writable: true,
 })
