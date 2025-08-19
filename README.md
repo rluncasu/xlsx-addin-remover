@@ -91,6 +91,12 @@ The project is configured for deployment on Vercel with the following optimizati
 - **App Router**: Using Next.js 15 App Router for better performance
 - **Static Generation**: Pages are pre-rendered where possible
 - **API Routes**: Serverless functions for file processing
+- **Serverless Compatibility**: Uses system temporary directory for file operations
+
+### Serverless Environment Fixes
+- ✅ **Fixed ENOENT Error**: Changed from `process.cwd()/temp` to `os.tmpdir()` for temporary file operations
+- ✅ **Vercel Compatibility**: Now works with Vercel's read-only `/var/task` filesystem
+- ✅ **Cross-Platform**: Uses system temp directory that works on all platforms
 
 ## API Endpoints
 

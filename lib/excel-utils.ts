@@ -1,6 +1,7 @@
 import AdmZip from 'adm-zip';
 import { promises as fs } from 'fs';
 import path from 'path';
+import os from 'os';
 
 export interface ExcelAddin {
   id: string;
@@ -22,7 +23,8 @@ export interface ExcelFileInfo {
  */
 export async function unpackExcelFile(fileBuffer: Buffer, fileName: string): Promise<ExcelFileInfo> {
   const zip = new AdmZip(fileBuffer);
-  const tempDir = path.join(process.cwd(), 'temp', Date.now().toString());
+  // Use system temp directory for serverless compatibility
+  const tempDir = path.join(os.tmpdir(), `excel-addin-remover-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
   
   // Create temp directory
   await fs.mkdir(tempDir, { recursive: true });

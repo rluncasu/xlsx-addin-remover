@@ -118,6 +118,9 @@ describe('Excel Utils', () => {
       const mockBuffer = Buffer.from('test')
       const fileName = 'test.xlsx'
       
+      // Mock console.error to prevent it from appearing in test output
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+      
       mockFs.access.mockResolvedValue(undefined)
       mockFs.readdir.mockRejectedValue(new Error('Read error'))
       
@@ -125,6 +128,12 @@ describe('Excel Utils', () => {
       
       expect(result.fileName).toBe(fileName)
       expect(result.addins).toHaveLength(0)
+      
+      // Verify that console.error was called with the error
+      expect(consoleSpy).toHaveBeenCalledWith('Error reading webextensions:', expect.any(Error))
+      
+      // Restore console.error
+      consoleSpy.mockRestore()
     })
   })
 
@@ -230,8 +239,17 @@ describe('Excel Utils', () => {
       
       mockFs.rm.mockRejectedValue(new Error('Cleanup error'))
       
+      // Mock console.error to prevent it from appearing in test output
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+      
       // Should not throw
       await expect(cleanupTempDir(tempDir)).resolves.toBeUndefined()
+      
+      // Verify that console.error was called with the error
+      expect(consoleSpy).toHaveBeenCalledWith('Error cleaning up temp directory:', expect.any(Error))
+      
+      // Restore console.error
+      consoleSpy.mockRestore()
     })
   })
 })
