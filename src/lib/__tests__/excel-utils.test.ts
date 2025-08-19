@@ -205,7 +205,7 @@ describe('Excel Utils', () => {
       mockFs.readdir.mockResolvedValue(['file1.xml', 'dir1'])
       mockFs.stat.mockResolvedValue({
         isDirectory: () => false,
-      } as any)
+      } as fs.Stats)
       mockFs.readFile.mockResolvedValue(Buffer.from('test content'))
       
       const result = await repackExcelFile(tempDir)

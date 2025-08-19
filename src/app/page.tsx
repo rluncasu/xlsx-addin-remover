@@ -128,7 +128,7 @@ export default function Home() {
             Excel Addin Remover
           </h1>
           <p className="text-lg text-gray-600">
-            Upload an Excel file, analyze its addins, and remove the ones you don't need
+            Upload an Excel file, analyze its addins, and remove the ones you don&apos;t need
           </p>
         </div>
 

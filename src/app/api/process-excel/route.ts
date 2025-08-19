@@ -22,8 +22,6 @@ export async function POST(request: NextRequest) {
     // Unpack the Excel file
     const fileInfo: ExcelFileInfo & { tempDir: string } = await unpackExcelFile(buffer, file.name);
     
-    let processedBuffer: Buffer;
-    
     if (selectedAddinIds) {
       const addinIds = JSON.parse(selectedAddinIds);
       
@@ -34,13 +32,13 @@ export async function POST(request: NextRequest) {
     }
     
     // Repack the file
-    processedBuffer = await repackExcelFile(fileInfo.tempDir);
+    const processedBuffer = await repackExcelFile(fileInfo.tempDir);
     
     // Clean up temp directory
     await cleanupTempDir(fileInfo.tempDir);
     
     // Return the processed file
-    const response = new NextResponse(processedBuffer);
+    const response = new NextResponse(new Uint8Array(processedBuffer));
     response.headers.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     response.headers.set('Content-Disposition', `attachment; filename="processed_${file.name}"`);
     

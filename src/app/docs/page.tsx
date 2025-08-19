@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import SwaggerUI from 'swagger-ui-react';
-import 'swagger-ui-react/swagger-ui.css';
+import Link from 'next/link';
+// import SwaggerUI from 'swagger-ui-react';
+// import 'swagger-ui-react/swagger-ui.css';
 
 export default function DocsPage() {
   const [swaggerSpec, setSwaggerSpec] = useState(null);
@@ -39,12 +40,12 @@ export default function DocsPage() {
         <div className="text-center">
           <div className="text-red-500 text-xl mb-4">⚠️</div>
           <p className="text-gray-800 mb-4">{error}</p>
-          <a
+          <Link
             href="/"
             className="text-blue-600 hover:text-blue-800 underline"
           >
             Return to Home
-          </a>
+          </Link>
         </div>
       </div>
     );
@@ -58,18 +59,25 @@ export default function DocsPage() {
             <h1 className="text-2xl font-bold text-gray-900">
               Excel Addin Remover API Documentation
             </h1>
-            <a
+            <Link
               href="/"
               className="text-blue-600 hover:text-blue-800 underline"
             >
               ← Back to App
-            </a>
+            </Link>
           </div>
         </div>
       </div>
       
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <SwaggerUI spec={swaggerSpec} />
+        <div className="bg-white rounded-lg shadow p-6">
+          <p className="text-gray-600 mb-4">API documentation is temporarily disabled during deployment setup.</p>
+          <p className="text-sm text-gray-500">The following endpoints are available:</p>
+          <ul className="mt-2 space-y-1 text-sm text-gray-600">
+            <li><code className="bg-gray-100 px-2 py-1 rounded">POST /api/analyze-excel</code> - Analyze Excel file for addins</li>
+            <li><code className="bg-gray-100 px-2 py-1 rounded">POST /api/process-excel</code> - Remove selected addins from Excel file</li>
+          </ul>
+        </div>
       </div>
     </div>
   );

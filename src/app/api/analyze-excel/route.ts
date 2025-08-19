@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     
     // Unpack the Excel file to analyze addins
-    const fileInfo: any = await unpackExcelFile(buffer, file.name);
+    const fileInfo = await unpackExcelFile(buffer, file.name);
     
     // Clean up temp directory
     await cleanupTempDir(fileInfo.tempDir);
