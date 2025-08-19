@@ -103,11 +103,11 @@ export async function removeAddins(tempDir: string, addinIds: string[]): Promise
   try {
     // Read taskpanes.xml to understand the relationships
     const taskpanesPath = path.join(webextensionsPath, 'taskpanes.xml');
-    const taskpanesContent = await fs.readFile(taskpanesPath, 'utf-8');
+    await fs.readFile(taskpanesPath, 'utf-8');
     
     // Read relationships file
     const relsPath = path.join(webextensionsPath, '_rels', 'taskpanes.xml.rels');
-    const relsContent = await fs.readFile(relsPath, 'utf-8');
+    await fs.readFile(relsPath, 'utf-8');
     
     // Parse relationships to find which files to remove
     const filesToRemove = new Set<string>();
@@ -149,7 +149,7 @@ export async function removeAddins(tempDir: string, addinIds: string[]): Promise
     await updateContentTypes(tempDir, filesToRemove);
     
     // Update root relationships if needed
-    await updateRootRelationships(tempDir, filesToRemove);
+    await updateRootRelationships(tempDir);
     
   } catch (error) {
     console.error('Error removing addins:', error);
@@ -198,7 +198,7 @@ async function updateContentTypes(tempDir: string, filesToRemove: Set<string>): 
 /**
  * Updates root relationships to remove references to deleted webextension files
  */
-async function updateRootRelationships(tempDir: string, filesToRemove: Set<string>): Promise<void> {
+async function updateRootRelationships(tempDir: string): Promise<void> {
   try {
     const rootRelsPath = path.join(tempDir, '_rels', '.rels');
     
@@ -221,7 +221,7 @@ async function updateRootRelationships(tempDir: string, filesToRemove: Set<strin
       const remainingFiles = await fs.readdir(webextensionsPath);
       remainingWebextensions = remainingFiles.filter(file => file.startsWith('webextension') && file.endsWith('.xml'));
       console.log('Remaining webextension files:', remainingWebextensions);
-    } catch (error) {
+    } catch {
       // Directory doesn't exist (was already removed), so no webextensions remain
       console.log('Webextensions directory was already removed, no webextensions remain');
       remainingWebextensions = [];
@@ -272,13 +272,11 @@ async function updateTaskpanesAndRelationships(webextensionsPath: string, filesT
     console.log('Original taskpanes content:', taskpanesContent);
     console.log('Original relationships content:', relsContent);
     
-    // Find which webextension files correspond to the removed addin IDs
-    const filesToRemove = new Set<string>();
+    // Get remaining webextension files
     const remainingFiles = await fs.readdir(webextensionsPath);
     const webextensionFiles = remainingFiles.filter(file => file.startsWith('webextension') && file.endsWith('.xml'));
     
     console.log('Webextension files found:', webextensionFiles);
-    console.log('Files to remove:', Array.from(filesToRemove));
     
     // If all webextension files are being removed, remove the entire webextensions directory
     if (filesToRemove.size === webextensionFiles.length) {

@@ -28,11 +28,9 @@ describe('Home Page', () => {
   })
 
   it('handles file selection', async () => {
-    const user = userEvent.setup()
     render(<Home />)
     
     const file = new File(['test content'], 'test.xlsx', { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const input = screen.getByRole('button', { name: 'Choose File' })
     
     // Simulate file selection
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
@@ -46,7 +44,6 @@ describe('Home Page', () => {
   })
 
   it('shows error for non-xlsx files', async () => {
-    const user = userEvent.setup()
     render(<Home />)
     
     const file = new File(['test content'], 'test.txt', { type: 'text/plain' })

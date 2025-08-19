@@ -6,7 +6,6 @@ import {
   repackExcelFile,
   cleanupTempDir,
   parseWebExtensionXml,
-  ExcelAddin,
 } from '../excel-utils'
 
 // Mock fs module

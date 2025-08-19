@@ -2,25 +2,57 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-// import SwaggerUI from 'swagger-ui-react';
-// import 'swagger-ui-react/swagger-ui.css';
+import dynamic from 'next/dynamic';
+
+// Dynamically import SwaggerUI to avoid SSR issues
+const SwaggerUI = dynamic(() => import('swagger-ui-react'), {
+  ssr: false,
+  loading: () => <div className="text-center py-8">Loading Swagger UI...</div>
+});
+
+
+
+interface SwaggerSpec {
+  openapi: string;
+  info: {
+    title: string;
+    version: string;
+    description: string;
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  paths: Record<string, any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  components?: Record<string, any>;
+}
 
 export default function DocsPage() {
-  const [swaggerSpec, setSwaggerSpec] = useState(null);
+  const [swaggerSpec, setSwaggerSpec] = useState<SwaggerSpec | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Load SwaggerUI CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css';
+    document.head.appendChild(link);
+
+    // Fetch API documentation
     fetch('/api/docs')
       .then(response => response.json())
       .then(data => {
         setSwaggerSpec(data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch(() => {
         setError('Failed to load API documentation');
         setLoading(false);
       });
+
+    // Cleanup
+    return () => {
+      document.head.removeChild(link);
+    };
   }, []);
 
   if (loading) {
@@ -70,14 +102,7 @@ export default function DocsPage() {
       </div>
       
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <p className="text-gray-600 mb-4">API documentation is temporarily disabled during deployment setup.</p>
-          <p className="text-sm text-gray-500">The following endpoints are available:</p>
-          <ul className="mt-2 space-y-1 text-sm text-gray-600">
-            <li><code className="bg-gray-100 px-2 py-1 rounded">POST /api/analyze-excel</code> - Analyze Excel file for addins</li>
-            <li><code className="bg-gray-100 px-2 py-1 rounded">POST /api/process-excel</code> - Remove selected addins from Excel file</li>
-          </ul>
-        </div>
+        {swaggerSpec && <SwaggerUI spec={swaggerSpec} />}
       </div>
     </div>
   );
