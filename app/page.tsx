@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { ExcelAddin } from '@/lib/excel-utils';
+import { Button, Card, CardHeader, CardBody, CardFooter, Badge, Alert } from './components/ui';
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -120,149 +121,154 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-semibold text-gray-800 mb-4 font-display tracking-wide">
             Excel Addin Remover
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-500 font-sans">
             Upload an Excel file, analyze its addins, and remove the ones you don&apos;t need
           </p>
         </div>
 
         {/* File Upload Section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Upload Excel File</h2>
+        <Card className="mb-6">
+          <CardHeader>
+            <h2 className="text-xl font-semibold text-gray-800 font-display tracking-wide">Upload Excel File</h2>
+          </CardHeader>
           
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".xlsx"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            
-            {!file ? (
-              <div>
-                <div className="text-6xl text-gray-400 mb-4">📊</div>
-                <p className="text-gray-600 mb-4">
-                  Drag and drop your Excel file here, or click to browse
-                </p>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Choose File
-                </button>
-              </div>
-            ) : (
-              <div>
-                <div className="text-6xl text-green-500 mb-4">✅</div>
-                <p className="text-gray-800 font-medium mb-2">{file.name}</p>
-                <p className="text-gray-600 mb-4">
-                  File size: {(file.size / 1024 / 1024).toFixed(2)} MB
-                </p>
-                <div className="space-x-3">
-                  <button
-                    onClick={analyzeFile}
-                    disabled={isAnalyzing}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+          <CardBody>
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary-500 transition-colors bg-gray-50">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".xlsx"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              
+              {!file ? (
+                <div>
+                  <div className="text-6xl text-gray-400 mb-4">📊</div>
+                  <p className="text-gray-500 mb-4 font-sans">
+                    Drag and drop your Excel file here, or click to browse
+                  </p>
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    variant="primary"
                   >
-                    {isAnalyzing ? 'Analyzing...' : 'Analyze Addins'}
-                  </button>
-                  <button
-                    onClick={resetFile}
-                    className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors"
-                  >
-                    Choose Different File
-                  </button>
+                    Choose File
+                  </Button>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
+              ) : (
+                <div>
+                  <div className="text-6xl text-success-500 mb-4">✅</div>
+                  <p className="text-gray-800 font-medium mb-2 text-sm font-sans">{file.name}</p>
+                  <p className="text-gray-500 mb-4 font-sans">
+                    File size: {(file.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                  <div className="space-x-3">
+                    <Button
+                      onClick={analyzeFile}
+                      disabled={isAnalyzing}
+                      variant={isAnalyzing ? 'primary' : 'secondary'}
+                    >
+                      {isAnalyzing ? 'Analyzing...' : 'Analyze Addins'}
+                    </Button>
+                    <Button
+                      onClick={resetFile}
+                      variant="secondary"
+                    >
+                      Choose Different File
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardBody>
+        </Card>
 
         {/* Error/Success Messages */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-            <div className="flex">
-              <div className="text-red-500 text-xl mr-3">⚠️</div>
-              <p className="text-red-800">{error}</p>
-            </div>
-          </div>
+          <Alert variant="error" title="Error">
+            {error}
+          </Alert>
         )}
 
         {success && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-            <div className="flex">
-              <div className="text-green-500 text-xl mr-3">✅</div>
-              <p className="text-green-800">{success}</p>
-            </div>
-          </div>
+          <Alert variant="success" title="Success">
+            {success}
+          </Alert>
         )}
 
         {/* Addins List */}
         {addins.length > 0 && (
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Found Addins ({addins.length})
-            </h2>
+          <Card className="mb-6">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-800 font-display tracking-wide">
+                  Found Addins
+                </h2>
+                <Badge variant="primary">{addins.length}</Badge>
+              </div>
+            </CardHeader>
             
-            <div className="space-y-3 mb-6">
-              {addins.map((addin) => (
-                <div
-                  key={addin.id}
-                  className={`border rounded-lg p-4 transition-colors ${
-                    selectedAddins.includes(addin.id)
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="checkbox"
-                        checked={selectedAddins.includes(addin.id)}
-                        onChange={() => handleAddinToggle(addin.id)}
-                        className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                      />
-                      <div>
-                        <h3 className="font-medium text-gray-900">{addin.name}</h3>
-                        <div className="text-sm text-gray-600 space-x-4">
-                          <span>Version: {addin.version}</span>
-                          <span>Store: {addin.store}</span>
-                          <span>Type: {addin.storeType}</span>
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          ID: {addin.id}
+            <CardBody>
+              <div className="space-y-3 mb-6">
+                {addins.map((addin) => (
+                  <div
+                    key={addin.id}
+                    className={`border rounded-lg p-4 transition-colors ${
+                      selectedAddins.includes(addin.id)
+                        ? 'border-primary-500 bg-primary-50'
+                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <input
+                          type="checkbox"
+                          checked={selectedAddins.includes(addin.id)}
+                          onChange={() => handleAddinToggle(addin.id)}
+                          className="w-5 h-5 text-primary-500 rounded focus:ring-primary-500 focus:ring-2"
+                        />
+                        <div>
+                          <h3 className="font-medium text-gray-800 text-sm font-sans">{addin.name}</h3>
+                          <div className="text-sm text-gray-500 space-x-4 font-sans">
+                            <span>Version: {addin.version}</span>
+                            <span>Store: {addin.store}</span>
+                            <span>Type: {addin.storeType}</span>
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1 font-sans">
+                            ID: {addin.id}
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            {selectedAddins.length > 0 && (
-              <div className="border-t pt-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-gray-700">
-                    {selectedAddins.length} addin(s) selected for removal
-                  </p>
-                  <button
-                    onClick={processFile}
-                    disabled={isProcessing}
-                    className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
-                  >
-                    {isProcessing ? 'Processing...' : `Remove ${selectedAddins.length} Addin(s)`}
-                  </button>
-                </div>
+                ))}
               </div>
-            )}
-          </div>
+
+              {selectedAddins.length > 0 && (
+                <CardFooter>
+                  <div className="flex items-center justify-between">
+                    <p className="text-gray-600 font-sans">
+                      {selectedAddins.length} addin(s) selected for removal
+                    </p>
+                    <Button
+                      onClick={processFile}
+                      disabled={isProcessing}
+                      variant="danger"
+                    >
+                      {isProcessing ? 'Processing...' : `Remove ${selectedAddins.length} Addin(s)`}
+                    </Button>
+                  </div>
+                </CardFooter>
+              )}
+            </CardBody>
+          </Card>
         )}
 
         {/* API Documentation Link */}
@@ -271,7 +277,7 @@ export default function Home() {
             href="/api/docs"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 underline"
+            className="text-primary-500 hover:text-primary-600 underline font-sans"
           >
             View API Documentation
           </a>
